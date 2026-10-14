@@ -934,6 +934,89 @@ document.getElementById("coin").addEventListener("change", function () {
 loadChart("15m");
 
 </script>
+<!-- Crypto Screenshot Analysis -->
+<div style="background:#111827;padding:20px;margin:20px 0;border-radius:14px;color:white;">
 
+  <h2 style="margin-top:0;">📸 AI Chart Analysis</h2>
+
+  <p style="color:#9ca3af;">
+    Upload your crypto chart screenshot for analysis.
+  </p>
+
+  <input
+    type="file"
+    id="chartScreenshot"
+    accept="image/*"
+    style="width:100%;padding:12px;background:#1f2937;color:white;border-radius:8px;"
+  >
+
+  <img
+    id="chartPreview"
+    alt="Chart Screenshot Preview"
+    style="display:none;width:100%;margin-top:15px;border-radius:10px;"
+  >
+
+  <button
+    id="analyzeChartBtn"
+    type="button"
+    style="width:100%;padding:14px;margin-top:15px;background:#16a34a;color:white;border:0;border-radius:8px;font-size:16px;font-weight:bold;"
+  >
+    🔍 Analyze My Chart
+  </button>
+
+  <p id="chartAnalysisStatus" style="color:#fbbf24;margin-bottom:0;">
+    Upload a screenshot to get started.
+  </p>
+
+</div>
+
+<script>
+(function () {
+  const input = document.getElementById("chartScreenshot");
+  const preview = document.getElementById("chartPreview");
+  const button = document.getElementById("analyzeChartBtn");
+  const status = document.getElementById("chartAnalysisStatus");
+
+  let selectedImage = null;
+
+  input.addEventListener("change", function () {
+    const file = input.files && input.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      status.textContent = "Please select an image file.";
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      status.textContent = "Image must be smaller than 10 MB.";
+      input.value = "";
+      return;
+    }
+
+    if (selectedImage) {
+      URL.revokeObjectURL(selectedImage);
+    }
+
+    selectedImage = URL.createObjectURL(file);
+    preview.src = selectedImage;
+    preview.style.display = "block";
+
+    status.textContent =
+      "Screenshot uploaded! Press Analyze My Chart to continue.";
+  });
+
+  button.addEventListener("click", function () {
+    if (!input.files || !input.files[0]) {
+      status.textContent = "Please upload your chart screenshot first.";
+      return;
+    }
+
+    status.textContent =
+      "Screenshot ready. AI analysis connection is the next step.";
+  });
+})();
+</script>
 </body>
 </html>
