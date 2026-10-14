@@ -54,6 +54,26 @@ footer{text-align:center;padding:20px;color:#71819b;font-size:12px}
 
 <body>
 <header>
+ 
+<div class="card">
+  <h3>📈 Live Crypto Chart</h3>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+    <button onclick="loadChart('15m')">15m</button>
+    <button onclick="loadChart('1h')">1H</button>
+    <button onclick="loadChart('4h')">4H</button>
+    <button onclick="loadChart('1d')">1D</button>
+  </div>
+
+  <div id="cryptoChart"
+       style="width:100%;height:350px;background:#0b1220;border-radius:10px;">
+  </div>
+
+  <p id="chartStatus" style="font-size:13px;color:#9ca3af;">
+    Loading chart...
+  </p>
+</div>
+ 
  <h1>⚡ CRYPTO PRO AI</h1>
  <p>Crypto Market Analysis Dashboard</p>
  <div class="muted">Market data • Technical indicators • Trade planning</div>
