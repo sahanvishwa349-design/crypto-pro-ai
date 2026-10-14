@@ -506,7 +506,7 @@ async function loadChart(interval = '15m') {
   try {
     const url =
       'https://api.binance.com/api/v3/klines' +
-      '?symbol=BTCUSDT&interval=' + interval + '&limit=100';
+      '?symbol=BTCUSDT&interval=' + interval + '&limit=500';
 
     const response = await fetch(url);
 
@@ -529,7 +529,7 @@ async function loadChart(interval = '15m') {
     liveChart.timeScale().fitContent();
 
     liveChart.timeScale().applyOptions({
-      barSpacing: 12,
+      barSpacing: 5,
       rightOffset: 5
     });
 
