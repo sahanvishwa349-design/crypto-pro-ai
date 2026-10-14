@@ -527,7 +527,62 @@ async function loadChart(interval = '15m') {
        candleSeries.setData(candles);
 
     liveChart.timeScale().fitContent();
+const closes = candles.map(c => c.close);
 
+function calculateEMA(values, period) {
+  const ema = [];
+  const multiplier = 2 / (period + 1);
+  let previousEMA = values[0];
+
+  values.forEach((value, index) => {
+    if (index === 0) {
+      previousEMA = value;
+    } else {
+      previousEMA =
+        (value - previousEMA) * multiplier + previousEMA;
+    }
+
+    ema.push(previousEMA);
+  });
+
+  return ema;
+}
+
+const ema20Values = calculateEMA(closes, 20);
+const ema50Values = calculateEMA(closes, 50);
+
+const ema20Data = candles.map((c, i) => ({
+  time: c.time,
+  value: ema20Values[i]
+}));
+
+const ema50Data = candles.map((c, i) => ({
+  time: c.time,
+  value: ema50Values[i]
+}));
+
+if (!window.ema20Series) {
+  window.ema20Series = liveChart.addSeries(
+    LightweightCharts.LineSeries,
+    {
+      color: '#38bdf8',
+      lineWidth: 2,
+      title: 'EMA 20'
+    }
+  );
+
+  window.ema50Series = liveChart.addSeries(
+    LightweightCharts.LineSeries,
+    {
+      color: '#f59e0b',
+      lineWidth: 2,
+      title: 'EMA 50'
+    }
+  );
+}
+
+window.ema20Series.setData(ema20Data);
+window.ema50Series.setData(ema50Data);
     liveChart.timeScale().applyOptions({
       barSpacing: 5,
       rightOffset: 5
