@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Pro AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
+header{padding:22px 16px;background:#111a2b;border-bottom:1px solid #26334a}
+h1{margin:0;color:#40e0b0;font-size:25px}
+header p{color:#9eacc4;margin:8px 0 0;font-size:13px}
+main{padding:16px;max-width:700px;margin:auto}
+.card{background:#111a2b;border:1px solid #26334a;border-radius:14px;padding:16px;margin-bottom:14px}
+label{display:block;color:#aab9d0;margin:12px 0 7px;font-size:14px}
+select,input,button{width:100%;padding:12px;border-radius:8px;border:1px solid #34445d;background:#0a1220;color:#fff;font-size:15px}
+button{background:#24d6a2;color:#06120f;font-weight:bold;border:0;margin-top:14px}
+.price{font-size:28px;font-weight:bold;margin:12px 0}
+.green{color:#40e0b0}.muted{color:#9eacc4;font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result{font-size:18px;font-weight:bold;margin:12px 0}
+footer{text-align:center;color:#71819b;padding:20px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>⚡ CRYPTO PRO AI</h1>
+<p>Your crypto market analysis dashboard</p>
+</header>
+<main>
+<div class="card">
+<div class="muted">SELECT CRYPTOCURRENCY</div>
+<select id="coin">
+<option value="bitcoin">Bitcoin (BTC)</option>
+<option value="ethereum">Ethereum (ETH)</option>
+<option value="binancecoin">BNB</option>
+<option value="solana">Solana (SOL)</option>
+<option value="ripple">XRP</option>
+<option value="dogecoin">Dogecoin (DOGE)</option>
+</select>
+<div class="muted" style="margin-top:18px">CURRENT MARKET PRICE (USD)</div>
+<div class="price" id="price">Loading...</div>
+<div class="muted" id="change">Connecting to market data...</div>
+<button onclick="loadPrice()">🔄 Refresh Live Price</button>
+</div>
+
+<div class="card">
+<h3>📊 Trade Analysis Calculator</h3>
+<p class="muted">Enter your planned trade prices.</p>
+<label>Trade Direction</label>
+<select id="direction">
+<option value="BUY">BUY / LONG</option>
+<option value="SELL">SELL / SHORT</option>
+</select>
+<label>Entry Price (USD)</label>
+<input id="entry" type="number" step="any" placeholder="e.g. 65000">
+<div class="grid">
+<div><label>Stop Loss (SL)</label><input id="sl" type="number" step="any" placeholder="Stop loss"></div>
+<div><label>Take Profit (TP)</label><input id="tp" type="number" step="any" placeholder="Take profit"></div>
+</div>
+<button onclick="analyze()">Analyze Trade Setup</button>
+<div id="result" class="result"></div>
+<div id="details" class="muted"></div>
+</div>
+
+<div class="card">
+<h3>🤖 AI Signal Status</h3>
+<div class="result" id="signal">WAITING FOR ANALYSIS</div>
+<p class="muted">This starter version calculates trade risk and reward. It does not yet generate verified AI trading signals.</p>
+</div>
+</main>
+<footer>CRYPTO PRO AI • Educational tool • Not financial advice</footer>
+<script>
+async function loadPrice(){
+const coin=document.getElementById('coin').value;
+document.getElementById('price').textContent='Loading...';
+try{
+const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+coin+'&vs_currencies=usd&include_24hr_change=true');
+if(!r.ok)throw new Error('Market data unavailable');
+const d=await r.json();
+const x=d[coin];
+if(!x||x.usd==null)throw new Error('Price unavailable');
+document.getElementById('price').textContent='$'+x.usd.toLocaleString('en-US',{maximumFractionDigits:8});
+const c=x.usd_24h_change;
+document.getElementById('change').textContent='24h change: '+(c==null?'N/A':c.toFixed(2)+'%');
+}catch(e){
+document.getElementById('price').textContent='Price unavailable';
+document.getElementById('change').textContent='Try again later. API access may be limited.';
+}
+}
+function analyze(){
+const dir=document.getElementById('direction').value;
+const entry=Number(document.getElementById('entry').value);
+const sl=Number(document.getElementById('sl').value);
+const tp=Number(document.getElementById('tp').value);
+const result=document.getElementById('result');
+const details=document.getElementById('details');
+const signal=document.getElementById('signal');
+if(!entry||!sl||!tp||entry<=0||sl<=0||tp<=0){
+result.textContent='⚠️ Enter all prices correctly.';
+details.textContent='';
+signal.textContent='WAITING FOR VALID INPUT';
+return;
+}
+const risk=dir==='BUY'?entry-sl:sl-entry;
+const reward=dir==='BUY'?tp-entry:entry-tp;
+if(risk<=0||reward<=0){
+result.textContent='⚠️ Check your SL and TP levels.';
+details.textContent=dir==='BUY'?'For BUY: SL < Entry < TP.':'For SELL: TP < Entry < SL.';
+signal.textContent='INVALID TRADE SETUP';
+return;
+}
+const rr=reward/risk;
+result.textContent='Risk / Reward: 1 : '+rr.toFixed(2);
+details.textContent='Risk per coin: $'+risk.toFixed(6)+' | Potential reward per coin: $'+reward.toFixed(6);
+signal.textContent=rr>=2?'SETUP CHECK: REWARD ≥ 2× RISK':'SETUP CHECK: REWARD < 2× RISK';
+}
+document.getElementById('coin').addEventListener('change',loadPrice);
+loadPrice();
+</script>
+</body>
+</html>
