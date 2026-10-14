@@ -423,5 +423,121 @@ function clearChart(){
 
 loadMarket();
 </script>
+ <script>
+const chartBox = document.getElementById('cryptoChart');
+const chartStatus = document.getElementById('chartStatus');
+
+let liveChart = null;
+let candleSeries = null;
+let activeInterval = '15m';
+
+function initCryptoChart() {
+  if (!chartBox || !window.LightweightCharts) {
+    if (chartStatus) {
+      chartStatus.textContent =
+        'Chart library not loaded. Refresh and try again.';
+    }
+    return false;
+  }
+
+  if (liveChart) return true;
+
+  liveChart = LightweightCharts.createChart(chartBox, {
+    width: chartBox.clientWidth,
+    height: 350,
+    layout: {
+      background: { color: '#0b1220' },
+      textColor: '#d1d5db'
+    },
+    grid: {
+      vertLines: { color: '#1f2937' },
+      horzLines: { color: '#1f2937' }
+    },
+    rightPriceScale: {
+      borderColor: '#374151'
+    },
+    timeScale: {
+      borderColor: '#374151',
+      timeVisible: true
+    }
+  });
+
+  if (LightweightCharts.CandlestickSeries) {
+    candleSeries = liveChart.addSeries(
+      LightweightCharts.CandlestickSeries,
+      {
+        upColor: '#22c55e',
+        downColor: '#ef4444',
+        borderUpColor: '#22c55e',
+        borderDownColor: '#ef4444',
+        wickUpColor: '#22c55e',
+        wickDownColor: '#ef4444'
+      }
+    );
+  } else {
+    candleSeries = liveChart.addCandlestickSeries({
+      upColor: '#22c55e',
+      downColor: '#ef4444',
+      borderUpColor: '#22c55e',
+      borderDownColor: '#ef4444',
+      wickUpColor: '#22c55e',
+      wickDownColor: '#ef4444'
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    if (liveChart && chartBox.clientWidth > 0) {
+      liveChart.applyOptions({
+        width: chartBox.clientWidth
+      });
+    }
+  });
+
+  return true;
+}
+
+async function loadChart(interval = '15m') {
+  activeInterval = interval;
+
+  if (!initCryptoChart()) return;
+
+  chartStatus.textContent = 'Loading BTC/USDT chart...';
+
+  try {
+    const url =
+      'https://api.binance.com/api/v3/klines' +
+      '?symbol=BTCUSDT&interval=' + interval + '&limit=100';
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error('Market data unavailable');
+    }
+
+    const data = await response.json();
+
+    const candles = data.map(k => ({
+      time: Math.floor(k[0] / 1000),
+      open: Number(k[1]),
+      high: Number(k[2]),
+      low: Number(k[3]),
+      close: Number(k[4])
+    }));
+
+    candleSeries.setData(candles);
+    liveChart.timeScale().fitContent();
+
+    chartStatus.textContent =
+      'BTC/USDT · ' + interval +
+      ' · Live market candles from Binance';
+  } catch (error) {
+    chartStatus.textContent =
+      'Chart loading failed. Check your internet connection and try again.';
+    console.error('Chart error:', error);
+  }
+}
+
+loadChart('15m');
+</script>
 </body>
 </html>
