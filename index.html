@@ -662,7 +662,7 @@ window.tpSeries.setData([
 
   
 loadChart('15m');
-startLivePrice();
+
   // Binance WebSocket: live BTC/USDT price
 let liveSocket = null;
 let reconnectTimer = null;
@@ -722,7 +722,7 @@ function startLivePrice() {
     liveSocket.close();
   };
 }
-
+startLivePrice();
 </script>
 </body>
 </html>
