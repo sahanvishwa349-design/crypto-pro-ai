@@ -583,6 +583,38 @@ if (!window.ema20Series) {
 
 window.ema20Series.setData(ema20Data);
 window.ema50Series.setData(ema50Data);
+   // Entry, Stop Loss and Take Profit lines
+if (!window.entrySeries) {
+  window.entrySeries = liveChart.addSeries(
+    LightweightCharts.LineSeries,
+    {
+      color: '#ffffff',
+      lineWidth: 2,
+      lineStyle: LightweightCharts.LineStyle.Dashed,
+      title: 'Entry'
+    }
+  );
+
+  window.slSeries = liveChart.addSeries(
+    LightweightCharts.LineSeries,
+    {
+      color: '#ef4444',
+      lineWidth: 2,
+      lineStyle: LightweightCharts.LineStyle.Dashed,
+      title: 'Stop Loss'
+    }
+  );
+
+  window.tpSeries = liveChart.addSeries(
+    LightweightCharts.LineSeries,
+    {
+      color: '#22c55e',
+      lineWidth: 2,
+      lineStyle: LightweightCharts.LineStyle.Dashed,
+      title: 'Take Profit'
+    }
+  );
+}
     liveChart.timeScale().applyOptions({
       barSpacing: 5,
       rightOffset: 5
