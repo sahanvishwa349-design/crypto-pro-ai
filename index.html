@@ -652,6 +652,128 @@ window.tpSeries.setData([
 }
 
 loadChart('15m');
+  // Binance WebSocket: live BTC/USDT price
+let liveSocket = null;
+let reconnectTimer = null;
+
+function startLivePrice() {
+  if (
+    liveSocket &&
+    (
+      liveSocket.readyState === WebSocket.OPEN ||
+      liveSocket.readyState === WebSocket.CONNECTING
+    )
+  ) {
+    return;
+  }
+
+  liveSocket = new WebSocket(
+    'wss://stream.binance.com:9443/ws/btcusdt@trade'
+  );
+
+  liveSocket.onopen = function () {
+    console.log('Binance live price connected');
+    chartStatus.textContent =
+      'BTC/USDT · ' + activeInterval + ' · Live price connected';
+  };
+
+  liveSocket.onmessage = function (event) {
+    const trade = JSON.parse(event.data);
+    const price = Number(trade.p);
+
+    if (!Number.isFinite(price)) return;
+
+    const priceElement = document.getElementById('price');
+
+    if (priceElement) {
+      priceElement.textContent = '$' + price.toLocaleString(
+        'en-US',
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+    }
+  };
+
+  liveSocket.onclose = function () {
+    console.log('Live price disconnected. Reconnecting...');
+
+    clearTimeout(reconnectTimer);
+
+    reconnectTimer = setTimeout(function () {
+      startLivePrice();
+    }, 3000);
+  };
+
+  liveSocket.onerror = function (error) {
+    console.error('Binance WebSocket error:', error);
+    liveSocket.close();
+  };
+}
+
+startLivePrice();
+  // Binance WebSocket: live BTC/USDT price
+let liveSocket = null;
+let reconnectTimer = null;
+
+function startLivePrice() {
+  if (
+    liveSocket &&
+    (
+      liveSocket.readyState === WebSocket.OPEN ||
+      liveSocket.readyState === WebSocket.CONNECTING
+    )
+  ) {
+    return;
+  }
+
+  liveSocket = new WebSocket(
+    'wss://stream.binance.com:9443/ws/btcusdt@trade'
+  );
+
+  liveSocket.onopen = function () {
+    console.log('Binance live price connected');
+    chartStatus.textContent =
+      'BTC/USDT · ' + activeInterval + ' · Live price connected';
+  };
+
+  liveSocket.onmessage = function (event) {
+    const trade = JSON.parse(event.data);
+    const price = Number(trade.p);
+
+    if (!Number.isFinite(price)) return;
+
+    const priceElement = document.getElementById('price');
+
+    if (priceElement) {
+      priceElement.textContent = '$' + price.toLocaleString(
+        'en-US',
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+    }
+  };
+
+  liveSocket.onclose = function () {
+    console.log('Live price disconnected. Reconnecting...');
+
+    clearTimeout(reconnectTimer);
+
+    reconnectTimer = setTimeout(function () {
+      startLivePrice();
+    }, 3000);
+  };
+
+  liveSocket.onerror = function (error) {
+    console.error('Binance WebSocket error:', error);
+    liveSocket.close();
+  };
+}
+
+startLivePrice();
 </script>
 </body>
 </html>
