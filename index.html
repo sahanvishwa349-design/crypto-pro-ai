@@ -2,121 +2,403 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Crypto Pro AI</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080d18;color:#fff;font-family:Arial,sans-serif}
-header{padding:22px 16px;background:#111a2b;border-bottom:1px solid #26334a}
+body{
+ margin:0;background:#080d18;color:#f4f7ff;
+ font-family:Arial,sans-serif
+}
+header{
+ padding:22px 16px;background:#111a2b;
+ border-bottom:1px solid #26334a
+}
 h1{margin:0;color:#40e0b0;font-size:25px}
-header p{color:#9eacc4;margin:8px 0 0;font-size:13px}
-main{padding:16px;max-width:700px;margin:auto}
-.card{background:#111a2b;border:1px solid #26334a;border-radius:14px;padding:16px;margin-bottom:14px}
-label{display:block;color:#aab9d0;margin:12px 0 7px;font-size:14px}
-select,input,button{width:100%;padding:12px;border-radius:8px;border:1px solid #34445d;background:#0a1220;color:#fff;font-size:15px}
-button{background:#24d6a2;color:#06120f;font-weight:bold;border:0;margin-top:14px}
-.price{font-size:28px;font-weight:bold;margin:12px 0}
-.green{color:#40e0b0}.muted{color:#9eacc4;font-size:13px}
+header p{color:#9eacc4;font-size:13px}
+main{max-width:750px;margin:auto;padding:14px}
+.card{
+ background:#111a2b;border:1px solid #26334a;
+ border-radius:14px;padding:16px;margin-bottom:14px
+}
+label{display:block;color:#aab9d0;margin:13px 0 7px}
+select,input,button{
+ width:100%;padding:12px;border-radius:9px;
+ border:1px solid #34445d;background:#0a1220;
+ color:white;font-size:15px
+}
+button{
+ background:#24d6a2;color:#06120f;
+ border:0;font-weight:bold;margin-top:12px
+}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.result{font-size:18px;font-weight:bold;margin:12px 0}
-footer{text-align:center;color:#71819b;padding:20px;font-size:12px}
+.price{font-size:27px;font-weight:bold;margin:12px 0}
+.muted{font-size:13px;color:#9eacc4;line-height:1.6}
+.green{color:#40e0b0}
+.red{color:#ff647c}
+.yellow{color:#ffd166}
+.result{font-size:21px;font-weight:bold;margin:12px 0}
+.stat{
+ padding:12px;background:#0a1220;border-radius:9px;
+ margin-top:9px
+}
+hr{border:0;border-top:1px solid #26334a;margin:15px 0}
+#chartPreview{width:100%;margin-top:12px;border-radius:8px}
+footer{text-align:center;padding:20px;color:#71819b;font-size:12px}
 </style>
 </head>
+
 <body>
 <header>
-<h1>⚡ CRYPTO PRO AI</h1>
-<p>Your crypto market analysis dashboard</p>
+ <h1>⚡ CRYPTO PRO AI</h1>
+ <p>Crypto Market Analysis Dashboard</p>
+ <div class="muted">Market data • Technical indicators • Trade planning</div>
 </header>
+
 <main>
+
 <div class="card">
-<div class="muted">SELECT CRYPTOCURRENCY</div>
-<select id="coin">
-<option value="bitcoin">Bitcoin (BTC)</option>
-<option value="ethereum">Ethereum (ETH)</option>
-<option value="binancecoin">BNB</option>
-<option value="solana">Solana (SOL)</option>
-<option value="ripple">XRP</option>
-<option value="dogecoin">Dogecoin (DOGE)</option>
-</select>
-<div class="muted" style="margin-top:18px">CURRENT MARKET PRICE (USD)</div>
-<div class="price" id="price">Loading...</div>
-<div class="muted" id="change">Connecting to market data...</div>
-<button onclick="loadPrice()">🔄 Refresh Live Price</button>
+ <h3>📊 Live Crypto Market</h3>
+
+ <label>Choose Coin</label>
+ <select id="coin">
+  <option value="BTCUSDT">Bitcoin (BTC)</option>
+  <option value="ETHUSDT">Ethereum (ETH)</option>
+  <option value="BNBUSDT">BNB</option>
+  <option value="SOLUSDT">Solana (SOL)</option>
+  <option value="XRPUSDT">XRP</option>
+  <option value="DOGEUSDT">Dogecoin (DOGE)</option>
+  <option value="ADAUSDT">Cardano (ADA)</option>
+  <option value="LINKUSDT">Chainlink (LINK)</option>
+ </select>
+
+ <label>Timeframe</label>
+ <select id="tf">
+  <option value="15m">15 Minutes</option>
+  <option value="1h" selected>1 Hour</option>
+  <option value="4h">4 Hours</option>
+  <option value="1d">1 Day</option>
+ </select>
+
+ <div class="muted" style="margin-top:16px">CURRENT PRICE</div>
+ <div class="price" id="price">Loading...</div>
+ <div class="muted" id="marketStatus">Connecting to market data...</div>
+
+ <button onclick="loadMarket()">🔄 Refresh Analysis</button>
 </div>
 
 <div class="card">
-<h3>📊 Trade Analysis Calculator</h3>
-<p class="muted">Enter your planned trade prices.</p>
-<label>Trade Direction</label>
-<select id="direction">
-<option value="BUY">BUY / LONG</option>
-<option value="SELL">SELL / SHORT</option>
-</select>
-<label>Entry Price (USD)</label>
-<input id="entry" type="number" step="any" placeholder="e.g. 65000">
-<div class="grid">
-<div><label>Stop Loss (SL)</label><input id="sl" type="number" step="any" placeholder="Stop loss"></div>
-<div><label>Take Profit (TP)</label><input id="tp" type="number" step="any" placeholder="Take profit"></div>
-</div>
-<button onclick="analyze()">Analyze Trade Setup</button>
-<div id="result" class="result"></div>
-<div id="details" class="muted"></div>
+ <h3>🧠 Technical Analysis</h3>
+
+ <div class="stat">
+  <div class="muted">MARKET SIGNAL</div>
+  <div class="result yellow" id="signal">WAITING...</div>
+  <div class="muted" id="reason">Loading market candles...</div>
+ </div>
+
+ <div class="grid">
+  <div class="stat">
+   <div class="muted">EMA 9</div>
+   <strong id="ema9">--</strong>
+  </div>
+  <div class="stat">
+   <div class="muted">EMA 21</div>
+   <strong id="ema21">--</strong>
+  </div>
+  <div class="stat">
+   <div class="muted">RSI 14</div>
+   <strong id="rsi">--</strong>
+  </div>
+  <div class="stat">
+   <div class="muted">LAST CANDLE</div>
+   <strong id="trend">--</strong>
+  </div>
+ </div>
+
+ <p class="muted" id="analysisTime"></p>
 </div>
 
 <div class="card">
-<h3>🤖 AI Signal Status</h3>
-<div class="result" id="signal">WAITING FOR ANALYSIS</div>
-<p class="muted">This starter version calculates trade risk and reward. It does not yet generate verified AI trading signals.</p>
+ <h3>🎯 Trade Setup Calculator</h3>
+ <p class="muted">
+  Levels are calculated from market price and recent candle ranges.
+  They are estimates, not guaranteed targets.
+ </p>
+
+ <label>Trade Direction</label>
+ <select id="direction">
+  <option value="BUY">BUY / LONG</option>
+  <option value="SELL">SELL / SHORT</option>
+ </select>
+
+ <label>Entry Price (USDT)</label>
+ <input id="entry" type="number" step="any" placeholder="Entry price">
+
+ <div class="grid">
+  <div>
+   <label>Stop Loss</label>
+   <input id="sl" type="number" step="any" placeholder="SL">
+  </div>
+  <div>
+   <label>Risk Amount (USDT)</label>
+   <input id="riskAmount" type="number" min="0" step="any" value="10">
+  </div>
+ </div>
+
+ <button onclick="calculateTrade()">Calculate TP / SL</button>
+ <div id="tradeResult" class="muted"></div>
 </div>
+
+<div class="card">
+ <h3>📸 Upload Chart Screenshot</h3>
+ <p class="muted">
+  Select a chart image to preview it. This starter version
+  does not yet perform AI image analysis.
+ </p>
+
+ <input type="file" id="chartFile" accept="image/*">
+ <img id="chartPreview" alt="Chart preview" hidden>
+ <button onclick="clearChart()">Remove Image</button>
+</div>
+
+<div class="card">
+ <h3>ℹ️ About This Signal System</h3>
+ <p class="muted">
+  Signals use EMA 9, EMA 21 and RSI 14 with recent candle direction.
+  BUY or SELL means the indicator rules align; it does not mean
+  a profitable trade is guaranteed. WAIT means the rules do not
+  currently agree.
+ </p>
+ <p class="muted">
+  Data availability depends on the exchange API and your internet
+  connection. Confirm prices and levels before trading.
+ </p>
+</div>
+
 </main>
-<footer>CRYPTO PRO AI • Educational tool • Not financial advice</footer>
+
+<footer>CRYPTO PRO AI • Educational analysis tool • Trade responsibly</footer>
+
 <script>
-async function loadPrice(){
-const coin=document.getElementById('coin').value;
-document.getElementById('price').textContent='Loading...';
-try{
-const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+coin+'&vs_currencies=usd&include_24hr_change=true');
-if(!r.ok)throw new Error('Market data unavailable');
-const d=await r.json();
-const x=d[coin];
-if(!x||x.usd==null)throw new Error('Price unavailable');
-document.getElementById('price').textContent='$'+x.usd.toLocaleString('en-US',{maximumFractionDigits:8});
-const c=x.usd_24h_change;
-document.getElementById('change').textContent='24h change: '+(c==null?'N/A':c.toFixed(2)+'%');
-}catch(e){
-document.getElementById('price').textContent='Price unavailable';
-document.getElementById('change').textContent='Try again later. API access may be limited.';
+let latestMarket = null;
+
+function fmt(n){
+ if(!Number.isFinite(n)) return "--";
+ return n.toLocaleString("en-US",{maximumFractionDigits:8});
 }
+
+function ema(values, period){
+ const k=2/(period+1);
+ let e=values[0];
+ for(let i=1;i<values.length;i++){
+  e=values[i]*k+e*(1-k);
+ }
+ return e;
 }
-function analyze(){
-const dir=document.getElementById('direction').value;
-const entry=Number(document.getElementById('entry').value);
-const sl=Number(document.getElementById('sl').value);
-const tp=Number(document.getElementById('tp').value);
-const result=document.getElementById('result');
-const details=document.getElementById('details');
-const signal=document.getElementById('signal');
-if(!entry||!sl||!tp||entry<=0||sl<=0||tp<=0){
-result.textContent='⚠️ Enter all prices correctly.';
-details.textContent='';
-signal.textContent='WAITING FOR VALID INPUT';
-return;
+
+function rsi(values, period=14){
+ if(values.length<=period) return 50;
+ let gains=0, losses=0;
+ for(let i=1;i<=period;i++){
+  const d=values[i]-values[i-1];
+  if(d>0) gains+=d;
+  else losses-=d;
+ }
+ let ag=gains/period, al=losses/period;
+ for(let i=period+1;i<values.length;i++){
+  const d=values[i]-values[i-1];
+  ag=(ag*(period-1)+Math.max(d,0))/period;
+  al=(al*(period-1)+Math.max(-d,0))/period;
+ }
+ if(al===0) return 100;
+ return 100-(100/(1+ag/al));
 }
-const risk=dir==='BUY'?entry-sl:sl-entry;
-const reward=dir==='BUY'?tp-entry:entry-tp;
-if(risk<=0||reward<=0){
-result.textContent='⚠️ Check your SL and TP levels.';
-details.textContent=dir==='BUY'?'For BUY: SL < Entry < TP.':'For SELL: TP < Entry < SL.';
-signal.textContent='INVALID TRADE SETUP';
-return;
+
+async function loadMarket(){
+ const coin=document.getElementById("coin").value;
+ const tf=document.getElementById("tf").value;
+
+ document.getElementById("marketStatus").textContent="Loading market data...";
+ document.getElementById("signal").textContent="ANALYZING...";
+ document.getElementById("signal").className="result yellow";
+
+ try{
+  const base="https://api.binance.com/api/v3/";
+
+  const responses=await Promise.all([
+   fetch(base+"ticker/price?symbol="+coin),
+   fetch(base+"klines?symbol="+coin+"&interval="+tf+"&limit=100")
+  ]);
+
+  if(!responses[0].ok||!responses[1].ok){
+   throw new Error("Market API unavailable");
+  }
+
+  const ticker=await responses[0].json();
+  const candles=await responses[1].json();
+
+  if(!Array.isArray(candles)||candles.length<30){
+   throw new Error("Not enough candle data");
+  }
+
+  const price=Number(ticker.price);
+  const closes=candles.map(c=>Number(c[4]));
+  const highs=candles.map(c=>Number(c[2]));
+  const lows=candles.map(c=>Number(c[3]));
+
+  const e9=ema(closes.slice(-60),9);
+  const e21=ema(closes.slice(-60),21);
+  const rv=rsi(closes,14);
+
+  // Exclude the currently forming candle from the signal.
+  const closedCloses=closes.slice(0,-1);
+  const closedHighs=highs.slice(0,-1);
+  const closedLows=lows.slice(0,-1);
+
+  const e9c=ema(closedCloses.slice(-60),9);
+  const e21c=ema(closedCloses.slice(-60),21);
+  const rc=rsi(closedCloses,14);
+
+  const last=closedCloses.length-1;
+  const candleUp=closedCloses[last]>closedCloses[last-1];
+  const candleDown=closedCloses[last]<closedCloses[last-1];
+
+  let signal="WAIT";
+  let reason="Indicator conditions are mixed.";
+
+  if(e9c>e21c && rc>=50 && rc<70 && candleUp){
+   signal="BUY";
+   reason="EMA 9 is above EMA 21, RSI supports momentum, and the last closed candle rose.";
+  }else if(e9c<e21c && rc<=50 && rc>30 && candleDown){
+   signal="SELL";
+   reason="EMA 9 is below EMA 21, RSI supports downward momentum, and the last closed candle fell.";
+  }
+
+  document.getElementById("price").textContent="$"+fmt(price);
+  document.getElementById("marketStatus").textContent=
+   coin+" • "+tf+" • Live price fetched";
+
+  document.getElementById("ema9").textContent=fmt(e9c);
+  document.getElementById("ema21").textContent=fmt(e21c);
+  document.getElementById("rsi").textContent=rc.toFixed(2);
+  document.getElementById("trend").textContent=
+   candleUp?"Bullish":candleDown?"Bearish":"Flat";
+
+  const sig=document.getElementById("signal");
+  sig.textContent=signal;
+  sig.className="result "+(signal==="BUY"?"green":signal==="SELL"?"red":"yellow");
+  document.getElementById("reason").textContent=reason;
+
+  document.getElementById("analysisTime").textContent=
+   "Updated: "+new Date().toLocaleString();
+
+  latestMarket={
+   price:price,
+   signal:signal,
+   high:closedHighs,
+   low:closedLows,
+   close:closedCloses
+  };
+
+  document.getElementById("entry").value=price;
+  document.getElementById("direction").value=
+   signal==="SELL"?"SELL":"BUY";
+
+  calculateTrade();
+
+ }catch(err){
+  document.getElementById("price").textContent="Unavailable";
+  document.getElementById("marketStatus").textContent=
+   "Could not fetch data. Check your connection and try again.";
+  document.getElementById("signal").textContent="WAIT";
+  document.getElementById("reason").textContent=
+   "No fresh analysis was completed. Do not use an old signal as current.";
+  document.getElementById("signal").className="result yellow";
+  document.getElementById("analysisTime").textContent="";
+ }
 }
-const rr=reward/risk;
-result.textContent='Risk / Reward: 1 : '+rr.toFixed(2);
-details.textContent='Risk per coin: $'+risk.toFixed(6)+' | Potential reward per coin: $'+reward.toFixed(6);
-signal.textContent=rr>=2?'SETUP CHECK: REWARD ≥ 2× RISK':'SETUP CHECK: REWARD < 2× RISK';
+
+function calculateTrade(){
+ const entry=Number(document.getElementById("entry").value);
+ const riskAmount=Number(document.getElementById("riskAmount").value);
+ const dir=document.getElementById("direction").value;
+ const out=document.getElementById("tradeResult");
+
+ if(!entry||entry<=0||!Number.isFinite(entry)){
+  out.textContent="Enter a valid entry price.";
+  return;
+ }
+
+ if(!latestMarket||!latestMarket.close.length){
+  out.textContent="Load market data first to estimate trade levels.";
+  return;
+ }
+
+ const h=latestMarket.high;
+ const l=latestMarket.low;
+ const c=latestMarket.close;
+ const n=Math.min(14,c.length-1);
+
+ let range=0;
+ for(let i=c.length-n;i<c.length;i++){
+  range+=h[i]-l[i];
+ }
+ const atr=range/n;
+
+ if(!Number.isFinite(atr)||atr<=0){
+  out.textContent="Could not estimate volatility.";
+  return;
+ }
+
+ const risk=atr*1.5;
+ const sl=dir==="BUY"?entry-risk:entry+risk;
+ const tp1=dir==="BUY"?entry+risk:entry-risk;
+ const tp2=dir==="BUY"?entry+2*risk:entry-2*risk;
+ const tp3=dir==="BUY"?entry+3*risk:entry-3*risk;
+
+ const amount=Number.isFinite(riskAmount)&&riskAmount>0?riskAmount:0;
+ const quantity=amount>0?amount/risk:0;
+
+ out.innerHTML=
+  "<div class='stat'><b>Direction:</b> "+dir+"</div>"+
+  "<div class='stat'>Entry: "+fmt(entry)+" USDT</div>"+
+  "<div class='stat red'>Stop Loss: "+fmt(sl)+"</div>"+
+  "<div class='stat green'>TP1: "+fmt(tp1)+"</div>"+
+  "<div class='stat green'>TP2: "+fmt(tp2)+"</div>"+
+  "<div class='stat green'>TP3: "+fmt(tp3)+"</div>"+
+  "<div class='stat'>Estimated price risk: "+fmt(risk)+" per coin</div>"+
+  (quantity>0?"<div class='stat'>Approx. position size: "+fmt(quantity)+
+   " coins, before fees and slippage.</div>":"")+
+  "<p class='muted'>Targets use recent average candle range, not guaranteed support or resistance. Position sizing is illustrative; leverage and liquidation risk are not included.</p>";
 }
-document.getElementById('coin').addEventListener('change',loadPrice);
-loadPrice();
+
+document.getElementById("chartFile").addEventListener("change",function(){
+ const file=this.files&&this.files[0];
+ const img=document.getElementById("chartPreview");
+ if(!file)return;
+ if(!file.type.startsWith("image/")){
+  alert("Please select an image.");
+  return;
+ }
+ if(file.size>8*1024*1024){
+  alert("Choose an image smaller than 8 MB.");
+  this.value="";
+  return;
+ }
+ img.src=URL.createObjectURL(file);
+ img.hidden=false;
+});
+
+function clearChart(){
+ const img=document.getElementById("chartPreview");
+ if(img.src.startsWith("blob:"))URL.revokeObjectURL(img.src);
+ img.src="";
+ img.hidden=true;
+ document.getElementById("chartFile").value="";
+}
+
+loadMarket();
 </script>
 </body>
 </html>
