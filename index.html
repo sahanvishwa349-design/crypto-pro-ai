@@ -613,7 +613,28 @@ if (!window.entrySeries) {
       lineStyle: LightweightCharts.LineStyle.Dashed,
       title: 'Take Profit'
     }
-  );
+  );const lastCandle = candles[candles.length - 1];
+const entryPrice = lastCandle.close;
+const stopLossPrice = entryPrice * 0.99;
+const takeProfitPrice = entryPrice * 1.02;
+
+const firstTime = candles[0].time;
+const lastTime = lastCandle.time;
+
+window.entrySeries.setData([
+  { time: firstTime, value: entryPrice },
+  { time: lastTime, value: entryPrice }
+]);
+
+window.slSeries.setData([
+  { time: firstTime, value: stopLossPrice },
+  { time: lastTime, value: stopLossPrice }
+]);
+
+window.tpSeries.setData([
+  { time: firstTime, value: takeProfitPrice },
+  { time: lastTime, value: takeProfitPrice }
+]);
 }
     liveChart.timeScale().applyOptions({
       barSpacing: 5,
