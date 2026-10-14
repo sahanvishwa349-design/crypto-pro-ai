@@ -524,8 +524,14 @@ async function loadChart(interval = '15m') {
       close: Number(k[4])
     }));
 
-    candleSeries.setData(candles);
+       candleSeries.setData(candles);
+
     liveChart.timeScale().fitContent();
+
+    liveChart.timeScale().applyOptions({
+      barSpacing: 12,
+      rightOffset: 5
+    });
 
     chartStatus.textContent =
       'BTC/USDT · ' + interval +
